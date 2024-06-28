@@ -15,7 +15,7 @@ body{
 
 .header{
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
-    padding-inline: 24px;
+    padding: 20px 24px;
 }
 
 .header-content{
@@ -66,4 +66,16 @@ body{
 .country-card:hover{
  transform: scale(1.05);
  box-shadow: 0 0px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width:768px) {
+    .countries-container{
+        max-width: 1280px;
+        margin:50px auto 0;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
 }
