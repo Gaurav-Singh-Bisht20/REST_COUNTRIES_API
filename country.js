@@ -11,6 +11,9 @@ const currencies = document.querySelector('.currencies')
 const languages = document.querySelector('.languages')
 const borderCountries = document.querySelector('.border-countries')
 const themeChanger = document.querySelector('.theme-changer')
+const body = document.body
+const mode = document.querySelector('.mode');
+const themeIcon = document.querySelector('.theme-changer i');
 
 fetch(`https://restcountries.com/v3.1/name/${countryName}?fullText=true`)
   .then((res) => res.json())
@@ -63,10 +66,30 @@ fetch(`https://restcountries.com/v3.1/name/${countryName}?fullText=true`)
   })
 
   themeChanger.addEventListener('click', () => {
-    document.body.classList.toggle('dark')
-  })
-
-if(themeChanger.classList.include('dark')){
-    themeChanger.innerHTML = 'light mode'
-}
+    body.classList.toggle('dark');
+    updateModeText();
+    localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
+  });
   
+  function updateModeText() {
+    if (body.classList.contains('dark')) {
+      mode.innerText = 'Light Mode';
+      themeIcon.classList.remove('fa-moon');
+      themeIcon.classList.add('fa-sun');
+    } else {
+      mode.innerText = 'Dark Mode';
+      themeIcon.classList.remove('fa-sun');
+      themeIcon.classList.add('fa-moon');
+    }
+  }
+
+  function applyStoredMode() {
+    const storedMode = localStorage.getItem('theme');
+    if (storedMode === 'dark') {
+      body.classList.add('dark');
+    }
+    updateModeText();
+  }
+  
+
+  applyStoredMode();
