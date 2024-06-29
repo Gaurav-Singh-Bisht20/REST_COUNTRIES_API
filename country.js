@@ -1,53 +1,72 @@
-const urlParams = new URLSearchParams(location.search);
-const countryName = urlParams.get('name');
-const countryMainContainer = document.querySelector('.country-main')
-
-
-let countryData;
+const countryName = new URLSearchParams(location.search).get('name')
+const flagImage = document.querySelector('.country-details img')
+const countryNameH1 = document.querySelector('.country-details h1')
+const nativeName = document.querySelector('.native-name')
+const population = document.querySelector('.population')
+const region = document.querySelector('.region')
+const subRegion = document.querySelector('.sub-region')
+const capital = document.querySelector('.capital')
+const topLevelDomain = document.querySelector('.top-level-domain')
+const currencies = document.querySelector('.currencies')
+const languages = document.querySelector('.languages')
+const borderCountries = document.querySelector('.border-countries')
+const themeChanger = document.querySelector('.theme-changer')
 
 fetch(`https://restcountries.com/v3.1/name/${countryName}?fullText=true`)
   .then((res) => res.json())
-  .then((data) => {
-    countryData = data[0];
-    console.log(countryData)
-    console.log(countryData.flags.svg)
-    const countryDetail = document.createElement('div');
-    countryDetail.classList.add('country-detail');
-    countryDetail.innerHTML = `
-            <div class="img-container">
-                <img src="${countryData?.flags?.svg}" alt="" width="100%">
-            </div>
-            <div class="country-detail-text">
-                <h1>${countryData.name.common}</h1>
-                <div class="detailtext">
-                    <div class="left">
-                        <p><b>Native Name:</b> ${countryData.name.common}</p>
-                        <p><b>Population:</b> ${countryData.population}</p>
-                        <p><b>Region:</b>${countryData.region}</p>
-                        <p><b>Sub Region:</b> ${countryData.subregion}</p>
-                        <p><b>Capital:</b>${countryData.capital}</p>
-                    </div>
-                    <div class="right">
-                        <p><b>Top Level Domain:</b>be</p>
-                        <p><b>Currencies:</b>${countryData.currencies.countryName}</p>
-                        <p><b>Languages:</b>${countryData.languages}</p>
-                    </div>
-                </div>
-                <p><b>Border Countries:</b>
-                    <a href=""></a>
-                    <a href="">nepal</a>
-                    <a href="">china</a>
-                </p>
-            </div>
-`
+  .then(([country]) => {
+    flagImage.src = country.flags.svg
+    countryNameH1.innerText = country.name.common
+    population.innerText = country.population.toLocaleString('en-IN')
+    region.innerText = country.region
+    topLevelDomain.innerText = country.tld.join(', ')
 
-countryMainContainer.append(countryDetail);
+    if (country.capital) {
+      capital.innerText = country.capital?.[0]
+    }
+
+    if (country.subregion) {
+      subRegion.innerText = country.subregion
+    }
+
+    if (country.name.nativeName) {
+      nativeName.innerText = Object.values(country.name.nativeName)[0].common
+    } else {
+      nativeName.innerText = country.name.common
+    }
+
+    if (country.currencies) {
+      currencies.innerText = Object.values(country.currencies)
+        .map((currency) => currency.name)
+        .join(', ')
+    }
+
+    if (country.languages) {
+      languages.innerText = Object.values(country.languages).join(', ')
+    }
+
+    console.log(country);
+    if (country.borders) {
+      
+      country.borders.forEach((border) => {
+        fetch(`https://restcountries.com/v3.1/alpha/${border}`)
+          .then((res) => res.json())
+          .then(([borderCountry]) => {
+            // console.log(borderCountry)
+            const borderCountryTag = document.createElement('a')
+            borderCountryTag.innerText = borderCountry.name.common
+            borderCountryTag.href = `country.html?name=${borderCountry.name.common}`
+            borderCountries.append(borderCountryTag)
+          })
+      })
+    }
   })
-.catch((error) => console.error('Error fetching country data:', error));
 
+  themeChanger.addEventListener('click', () => {
+    document.body.classList.toggle('dark')
+  })
 
-
-
-
-// console.log(countryMainContainer)
-
+if(themeChanger.classList.include('dark')){
+    themeChanger.innerHTML = 'light mode'
+}
+  
